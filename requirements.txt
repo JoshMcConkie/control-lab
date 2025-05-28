@@ -4,3 +4,5 @@ matplotlib
 vpython
 ipywidgets
 scipy
+mujoco
+mujoco-py

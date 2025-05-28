@@ -1,0 +1,33 @@
+<mujoco model="maglev">
+    <compiler angle="radian"/>
+
+    <option timestep="0.01" integrator="RK4" gravity="0 0 -9.8" />
+    <!-- <size nstack="3000" nuser_body="1" nuser_jnt="1" nuser_geom="1" /> -->
+    
+    <!-- <asset>
+        <texture name="skybox" type="skybox" file="skybox.png"/>
+        <texture name="ground_texture" type="2d" file="ground_texture.png"/>
+        <material name="ground_material" texture="ground_texture"/>
+    </asset> -->
+
+    <worldbody>
+
+    <!--Magnet at origin-->
+        <body name="magnet" pos="0 0 0">
+            <geom type="box" size="0.02 .02 0.1" rgba="1 0 0 1"/>
+            <!-- <joint type="free" name="magnet_joint"/> -->
+        </body>
+        
+        <!--Ball with slider joint-->
+        <body name="ball" pos="0 0 -0.05">
+            <geom name="ball_sphere" type="sphere" size="0.01" rgba="0 0 1 1" density="1000"/>
+            <joint name="ball_slide" type="slide" axis="0 0 1" damping="0.1"/>
+        </body>
+        <!-- <geom name="ground" type="plane" size="10 10 0.1" material="ground_material"/> -->
+        <!-- <camera name="fixed_camera" pos="-5 0 5" lookat="0 0 0"/> -->
+    </worldbody>
+
+    <actuator>
+        <motor name="magnet_motor" joint="ball_slide" ctrlrange="0 5" gear="1"/>
+    </actuator>
+    </mujoco>
