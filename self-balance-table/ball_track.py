@@ -1,8 +1,20 @@
 import cv2
 import numpy as np
 import time
+import serial
+
+'''Time constraints'''
+last_send = 0.0
+SEND_INTERVAL = 1.0/50.0 # aka 50 Hz
 
 
+'''Serial'''
+ser = serial.Serial('COM10', 115200, timeout=1)
+time.sleep(2)
+banner = ser.readline().decode(errors='ignore').strip()
+print("Banner:", banner)
+
+'''Tracking + Packet send'''
 # Start the webcam
 cap = cv2.VideoCapture(1)
 
@@ -52,7 +64,20 @@ while True:
                 dt = now - prev_t
                 vx = (cx - cx_1)/dt
                 vy = (cy - cy_1)/dt
-                print(f"Ball position: ({cx}, {cy}); Velocity (p/s): ({vx}, {vy})")
+                # print(f"Ball position: ({cx}, {cy}); Velocity (p/s): ({vx}, {vy})")
+
+                # Only send packet if it follows the Hz constraint
+                if (now - last_send) >= SEND_INTERVAL:
+                    # build a packet
+                    packet = f"{cx},{cy},{int(vx)},{int(vy)}\n"
+                    try: # send/recieve from arduino through serial
+                        ser.write(packet.encode('utf-8'))
+                        echo = ser.readline().decode(errors='ignore').strip()
+                        print("Echo:", echo)
+                        last_send = now
+                    except Exception as e:
+                        print("Serial write failed:", e)
+              
             else:
                 print(f"Ball position: ({cx}, {cy}); Velocity (p/s): (N/A)")
                 
