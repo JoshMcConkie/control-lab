@@ -28,7 +28,7 @@ Kdx = 1.0
 #     return control_signal, error, integral
 
 
-
+CONTROL_ENABLED = False
 
 with mujoco.viewer.launch_passive(model, data) as viewer:
     start_time = time.time()
@@ -51,12 +51,13 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
         trajectory_theta.append(current_angle)
         velocity_theta.append(current_velocity)
         # control signal
-        control_signals = []
-        control_signal = Kp * current_angle + Kd * current_velocity - Kdx*xdot
-        control_signals.append(control_signal)
-
-        #  log data
-        signals.append(control_signals)
+        if CONTROL_ENABLED:
+            control_signals = []
+            control_signal = Kp * current_angle + Kd * current_velocity - Kdx*xdot
+            control_signals.append(control_signal)
+            #  log data
+            signals.append(control_signals)
+            
         x = np.linspace(0, 10, 500)
 
         # CHANGE TO True TO TRIGGER LOGGING
@@ -69,7 +70,8 @@ with mujoco.viewer.launch_passive(model, data) as viewer:
             plt.show()
 
         # apply control
-        data.ctrl[0] = control_signals[0] # first actuator is force on cart
+        if CONTROL_ENABLED:
+            data.ctrl[0] = control_signals[0] # first actuator is force on cart
 
         # Step
         mujoco.mj_step(model, data)
