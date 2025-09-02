@@ -1,2 +1,2 @@
 # control-lab
-Applied controllers laboratory
+My personal control theory and dynamic systems lab
